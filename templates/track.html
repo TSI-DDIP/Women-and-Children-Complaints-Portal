@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<h3>{{ tr.track_title }}</h3>
+	<form method="post" class="grid-2">
+		<label><span>{{ tr.petition_id }}</span>
+			<input name="key" required>
+		</label>
+		<div class="actions" style="align-items:flex-end;">
+			<button type="submit">{{ tr.search_btn }}</button>
+		</div>
+	</form>
+	<p class="helper">{{ tr.track_helper }}</p>
+</div>
+{% if results %}
+<div class="card" style="margin-top:1rem;">
+	<h3>{{ tr.results }}</h3>
+	<table class="table">
+		<thead><tr><th>ID</th><th>Mobile</th><th>{{ tr.name_col }}</th><th>{{ tr.location_col }}</th><th>{{ tr.description }}</th><th>{{ tr.response_col }}</th><th>{{ tr.status_col }}</th><th>{{ tr.created_col }}</th><th>{{ tr.download_col }}</th></tr></thead>
+		<tbody>
+		{% for c in results %}
+		<tr>
+			<td>{{ c[0] }}</td>
+			<td>{{ c[1] }}</td>
+			<td>{{ c[2] }}</td>
+			<td>{{ c[5] }} / {{ c[6] }} / {{ c[7] }}</td>
+			<td>{{ c[8] }}</td>
+			<td>{{ c[9] or '-' }}</td>
+			<td>
+				<span class="badge {% if c[10]=='Pending' %}pending{% elif c[10]=='In Progress' %}inprogress{% elif c[10]=='Resolved' %}resolved{% else %}rejected{% endif %}">{{ status_text(c[10]) }}</span>
+			</td>
+			<td>{{ c[11] }}</td>
+			<td><a class="btn secondary" href="/petition/{{ c[0] }}/download" download="petition-{{ c[0] }}.pdf">{{ tr.download_col }}</a></td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}

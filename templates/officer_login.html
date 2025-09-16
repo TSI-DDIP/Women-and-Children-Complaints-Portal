@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<h3>Officer Login</h3>
+	<form method="post" class="grid-2">
+		<label><span>PIN</span>
+			<input name="pin" required>
+		</label>
+		<div class="actions" style="align-items:flex-end;">
+			<button type="submit">Login</button>
+		</div>
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Officer Dashboard</h3>
+<p class="helper">Session active. <a href="/officer/logout">Logout</a></p>
+<div class="card">
+	<form method="get" class="grid-3">
+		<label><span>Status</span>
+			<select name="status">
+				<option value="">All</option>
+				{% for s in statuses %}
+				<option value="{{ s }}" {% if filters.status==s %}selected{% endif %}>{{ s }}</option>
+				{% endfor %}
+			</select>
+		</label>
+		<label><span>Taluk</span>
+			<select id="taluk" name="taluk"></select>
+		</label>
+		<label><span>Firka</span>
+			<select id="firka" name="firka"></select>
+		</label>
+		<label><span>Village</span>
+			<select id="village" name="village"></select>
+		</label>
+		<label><span>From</span>
+			<input type="date" name="from_date" value="{{ filters.from_date or '' }}">
+		</label>
+		<label><span>To</span>
+			<input type="date" name="to_date" value="{{ filters.to_date or '' }}">
+		</label>
+		<div class="actions">
+			<button type="submit">Apply Filters</button>
+			<a class="btn secondary" href="/officer/panel">Reset</a>
+		</div>
+	</form>
+</div>
+
+<div class="card" style="margin-top:1rem;">
+	<table class="table">
+		<thead><tr><th>ID</th><th>Mobile</th><th>Name</th><th>DOB</th><th>Location</th><th>Description</th><th>Response</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>
+		<tbody>
+		{% for c in complaints %}
+		<tr>
+			<td>{{ c[0] }}</td>
+			<td>{{ c[1] }}</td>
+			<td>{{ c[2] }}</td>
+			<td>{{ c[3] }}</td>
+			<td>{{ c[5] }} / {{ c[6] }} / {{ c[7] }}</td>
+			<td style="max-width:18rem; white-space:pre-wrap;">{{ c[8] }}</td>
+			<td style="max-width:18rem; white-space:pre-wrap;">{{ c[9] or '-' }}</td>
+			<td>
+				<span class="badge {% if c[10]=='Pending' %}pending{% elif c[10]=='In Progress' %}inprogress{% elif c[10]=='Resolved' %}resolved{% else %}rejected{% endif %}">{{ c[10] }}</span>
+			</td>
+			<td>{{ c[11] }}</td>
+			<td>
+				<form method="post" action="/officer/update" class="inline-form">
+					<input type="hidden" name="cid" value="{{ c[0] }}">
+					<div class="grid-2">
+						<label><span>Update Status</span>
+							<select name="status">
+								{% for s in statuses %}
+								<option value="{{ s }}" {% if c[10]==s %}selected{% endif %}>{{ s }}</option>
+								{% endfor %}
+							</select>
+						</label>
+					</div>
+					<div class="actions">
+						<button type="submit">Update</button>
+						<button type="button" class="btn secondary open-modal" data-cid="{{ c[0] }}">Send Response…</button>
+					</div>
+				</form>
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<div id="responseModal" style="display:none; position:fixed; inset:0; background: rgba(0,0,0,0.4);">
+	<div class="card" style="max-width:720px; margin:5vh auto; position:relative; top:50%; transform: translateY(-50%);">
+		<h3 style="text-align:center;">Send Response</h3>
+		<form method="post" action="/officer/update">
+			<input type="hidden" name="cid" id="modalCid">
+			<label><span>Response to petitioner</span>
+				<textarea name="response_text" style="min-height: 280px;" required></textarea>
+			</label>
+			<div class="actions" style="justify-content:center;">
+				<button type="submit">Send & Resolve</button>
+				<button type="button" class="btn secondary" id="closeModal">Cancel</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+async function loadLocations(){
+	const res = await fetch('/locations');
+	const loc = await res.json();
+	const talukSel = document.getElementById('taluk');
+	const firkaSel = document.getElementById('firka');
+	const villageSel = document.getElementById('village');
+	talukSel.innerHTML = '<option value="">All</option>' + Object.keys(loc).map(t=>`<option value="${t}" ${'{{ filters.taluk or "" }}'===t?'selected':''}>${t}</option>`).join('');
+	const setFirkas = () => {
+		const f = loc[talukSel.value] || {};
+		firkaSel.innerHTML = '<option value="">All</option>' + Object.keys(f).map(x=>`<option value="${x}" ${'{{ filters.firka or "" }}'===x?'selected':''}>${x}</option>`).join('');
+		villageSel.innerHTML = '<option value="">All</option>';
+	};
+	const setVillages = () => {
+		const villages = (loc[talukSel.value]||{})[firkaSel.value] || [];
+		villageSel.innerHTML = '<option value="">All</option>' + villages.map(v=>`<option value="${v}" ${'{{ filters.village or "" }}'===v?'selected':''}>${v}</option>`).join('');
+	};
+	setFirkas();
+	setVillages();
+	talukSel.onchange = ()=>{ setFirkas(); setVillages(); };
+	firkaSel.onchange = ()=>{ setVillages(); };
+}
+loadLocations();
+
+// Modal behavior
+const overlay = document.getElementById('responseModal');
+const closeBtn = document.getElementById('closeModal');
+document.querySelectorAll('.open-modal').forEach(btn=>{
+	btn.addEventListener('click', ()=>{
+		document.getElementById('modalCid').value = btn.dataset.cid;
+		overlay.style.display = 'block';
+		setTimeout(()=>{
+			const ta = overlay.querySelector('textarea');
+			ta && ta.focus();
+		}, 50);
+	});
+});
+closeBtn.addEventListener('click', ()=>{ overlay.style.display = 'none'; });
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay){ overlay.style.display='none'; } });
+</script>
+{% endblock %}

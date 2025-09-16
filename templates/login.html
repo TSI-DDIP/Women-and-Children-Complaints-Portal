@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<h3>Login</h3>
+	<form method="post">
+		<label><span>Mobile</span>
+			<input name="mobile" type="tel" required>
+		</label>
+		<label><span>Password</span>
+			<input name="password" type="password" required>
+		</label>
+		<div class="actions">
+			<button type="submit">Login</button>
+		</div>
+	</form>
+	<p class="helper">No account? <a href="/register">Register</a></p>
+</div>
+{% endblock %}
