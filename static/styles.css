@@ -1,0 +1,76 @@
+:root {
+	--brand: #1a73e8;
+	--bg: #f6f8fb;
+	--text: #1f2937;
+	--muted: #6b7280;
+	--border: #e5e7eb;
+	--danger: #ef4444;
+	--warning: #f59e0b;
+	--success: #10b981;
+}
+
+html, body { height: 100%; }
+body {
+	background: var(--bg);
+	color: var(--text);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.header {
+	background: #ffffff;
+	border-bottom: 1px solid var(--border);
+	position: sticky; top: 0; z-index: 10;
+}
+.brand { color: var(--brand); }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+
+main.container { flex: 1; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+.card {
+	background: #fff;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	padding: 1rem;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.card h3 { margin-top: 0; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table th, .table td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.table thead th { background: #fafafa; font-weight: 600; }
+.table tbody tr:hover { background: #fafbff; }
+
+.badge { padding: 0.2rem 0.5rem; border-radius: 999px; color: #fff; font-size: 0.75rem; display: inline-block; }
+.badge.pending { background: var(--danger); }
+.badge.inprogress { background: var(--warning); }
+.badge.resolved { background: var(--success); }
+.badge.rejected { background: #9ca3af; }
+
+.actions { display: flex; gap: 0.5rem; align-items: center; }
+
+label > span { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.25rem; }
+input[type="text"], input[type="tel"], input[type="date"], select, textarea {
+	width: 100%;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 0.6rem 0.7rem;
+	background: #fff;
+}
+textarea { min-height: 110px; }
+
+button, .btn {
+	background: var(--brand);
+	color: #fff;
+	padding: 0.55rem 0.9rem;
+	border: 0;
+	border-radius: 8px;
+	cursor: pointer;
+}
+button.secondary { background: #111827; }
+
+.helper { color: var(--muted); font-size: 0.85rem; }
