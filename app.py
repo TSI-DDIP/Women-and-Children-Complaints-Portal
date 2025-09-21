@@ -479,22 +479,14 @@ def submit():
     village = request.form.get("village")
     description = request.form.get("description", "").strip()
 
-    if not petitioner_name or not petitioner_dob or not petitioner_address or not taluk or not firka or not village or not description:
+    if not petitioner_name or not petitioner_dob or not taluk or not firka or not village or not description:
         return jsonify({"status":"error","message":"All fields required."}), 400
 
-    # enforce one complaint per 15 days
-    last = get_last_by_mobile(user_mobile)
-    if last:
-        last_dt = datetime.fromisoformat(last)
-        if datetime.now() - last_dt < timedelta(days=15):
-            next_allowed = last_dt + timedelta(days=15)
-            return jsonify({"status":"error","message":f"Only one petition in 15 days. Try after {next_allowed.date()}."}), 429
-
-    # enforce max 2 per calendar month
+      # enforce max 2 per calendar month
     now = datetime.now()
     count_this_month = count_month_complaints(user_mobile, now.year, now.month)
-    if count_this_month >= 2:
-        return jsonify({"status":"error","message":f"Monthly limit reached. Only 2 petitions allowed in {now.strftime('%B %Y')}."}), 429
+    if count_this_month >= 10:
+        return jsonify({"status":"error","message":f"Monthly limit reached. Only 10 petitions allowed in {now.strftime('%B %Y')}."}), 429
 
     cid = str(uuid.uuid4())[:8]
     complaint = {
