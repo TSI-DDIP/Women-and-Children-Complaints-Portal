@@ -274,7 +274,7 @@ def insert_complaint(c):
     cur = conn.cursor()
     cur.execute(
         """INSERT INTO complaints (id,mobile,petitioner_name,petitioner_dob,taluk,firka,village,description,response_text,status,created_at)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
         (
             c['id'],
             c['mobile'],
